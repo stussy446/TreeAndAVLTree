@@ -250,25 +250,28 @@ class BST:
             return queue
 
         # makes recursive inorder traversal call to go through tree and add each value to queue in the order visited
-        self._inorder_recursive_helper(node, queue)
+        self._inorder_recursive_helper_queue(node, queue)
 
         return queue
 
-    def _inorder_recursive_helper(self, node:BSTNode, queue: Queue) -> None:
+    def _inorder_recursive_helper_queue(self, node:BSTNode, queue: Queue) -> None:
         """
         recursively traverses tree via inorder_traversal, where each value is added to the queue after the values node
         is visited for the second time.
         :param node: current Node
         :type node: BSTNode
+        :param queue: queue to add values into
+        :type node: Queue
         """
         if node is not None:
-            self._inorder_recursive_helper(node.left, queue)
+            self._inorder_recursive_helper_queue(node.left, queue)
             queue.enqueue(node.value)
-            self._inorder_recursive_helper(node.right, queue)
+            self._inorder_recursive_helper_queue(node.right, queue)
 
     def find_min(self) -> object:
         """
-        Returns the lowest value of the tree. If the tree is empty, return None
+        Returns the lowest value of the tree. If the tree is empty, returns None
+
         :return: the lowest value object in the tree, or None if tree is empty
         :rtype: Object
         """
@@ -281,9 +284,21 @@ class BST:
 
     def find_max(self) -> object:
         """
-        TODO: Write your implementation
+        Returns the highest value of the tree. If the tree is empty, returns None
+
+        :return: the highest value object in the tree, or None if tree is empty
+        :rtype: Object
         """
-        pass
+        node = self.get_root()
+        if node is None:
+            return None
+
+        # traverses tree down to rightmost node and returns its value 
+        while node.right is not None:
+            node = node.right
+
+        return node.value
+
 
     def is_empty(self) -> bool:
         """
