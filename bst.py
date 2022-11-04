@@ -137,43 +137,103 @@ class BST:
 
     def remove(self, value: object) -> bool:
         """
-        TODO: Write your implementation
-        """
-        pass
+        Removes a value from the tree, returns True if value is removed and False otherwise
 
-    # Consider implementing methods that handle different removal scenarios; #
-    # you may find that you're able to use some of them in the AVL.          #
-    # Remove these comments.                                                 #
-    # Remove these method stubs if you decide not to use them.               #
-    # Change these methods in any way you'd like.                            #
+        :param value: value object to be removed from tree
+        :type value: object
+        :return: boolean indicating if value has been removed (True) or not (False)
+        :rtype: bool
+        """
+        parent = None
+        node = self.get_root()
+
+        if node is None:
+            return False
+
+        # while node.value != value and node is not None:
+        #     parent = node
+        #     if value >= node.value:
+        #         node = node.right
+        #     else:
+        #         node = node.left
+        #
+        # if node is None:
+        #     return False
+        #
+        # if node.left is None and node.right is None:
+        #     self._remove_no_subtrees(parent, node)
+        # elif node.left is None and node.right is not None or node.right is None and node.left is not None:
+        #     self._remove_one_subtree(parent, node)
+        #
+        # return True
 
     def _remove_no_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
-        TODO: Write your implementation
+        Removes node that has no subtrees (no left or right nodes)
+
+        :param remove_parent: parent of BSTNode to be removed
+        :type remove_parent: BSTNode
+        :param remove_node: BSTNode to be removed
+        :type remove_node: BSTNode
         """
-        # remove node that has no subtrees (no left or right nodes)
-        pass
+        if remove_node.value >= remove_parent.value:
+            remove_parent.right = None
+        else:
+            remove_parent.left = None
 
     def _remove_one_subtree(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
-        TODO: Write your implementation
+        Removes node that has a left or right subtree (only)
+
+        :param remove_parent: parent of BSTNode to be removed
+        :type remove_parent: BSTNode
+        :param remove_node: BSTNode to be removed
+        :type remove_node: BSTNode
         """
-        # remove node that has a left or right subtree (only)
-        pass
+        if remove_node.right is not None:
+            child_node = remove_node.right
+            remove_parent.right = child_node
+        else:
+            child_node = remove_node.left
+            remove_parent.left = child_node
 
     def _remove_two_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
-        TODO: Write your implementation
+        Removes node that has two subtrees
+        Need to find inorder successor and its parent (make a method!)
+
+        :param remove_parent: Parent of node to be removed
+        :type remove_parent: BSTNode
+        :param remove_node: BSTNode to be removed
+        :type remove_node: BSTNode
         """
-        # remove node that has two subtrees
-        # need to find inorder successor and its parent (make a method!)
+
         pass
 
     def contains(self, value: object) -> bool:
         """
-        TODO: Write your implementation
+        Returns True if value is in the tree. Returns False if value is not in tree or the tree is empty.
+
+        :param value: value to be searched for
+        :type value: object
+        :return: boolean value indicating if value was found (True) or if it was not/the tree was empty (False)
+        :rtype: bool
         """
-        pass
+        if self.get_root() is None:
+            return False
+
+        node = self.get_root()
+
+        # traverse down tree until value is either found or it is determined the value is not in the tree 
+        while node is not None:
+            if value > node.value:
+                node = node.right
+            elif value < node.value:
+                node = node.left
+            else:
+                return True
+
+        return False
 
     def inorder_traversal(self) -> Queue:
         """
