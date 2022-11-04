@@ -116,7 +116,7 @@ class BST:
         new_node = BSTNode(value)
 
         # if the bst is empty, sets new node to the root of the tree
-        if node is None:
+        if self.is_empty():
             self._root = new_node
             return
 
@@ -144,11 +144,11 @@ class BST:
         :return: boolean indicating if value has been removed (True) or not (False)
         :rtype: bool
         """
+        if self.is_empty():
+            return False
+
         parent = None
         node = self.get_root()
-
-        if node is None:
-            return False
 
         # while node.value != value and node is not None:
         #     parent = node
@@ -219,7 +219,7 @@ class BST:
         :return: boolean value indicating if value was found (True) or if it was not/the tree was empty (False)
         :rtype: bool
         """
-        if self.get_root() is None:
+        if self.is_empty():
             return False
 
         node = self.get_root()
@@ -244,10 +244,11 @@ class BST:
         :rtype: Queue
         """
         queue = Queue()
-        node = self.get_root()
 
-        if node is None:
+        if self.is_empty():
             return queue
+
+        node = self.get_root()
 
         # makes recursive inorder traversal call to go through tree and add each value to queue in the order visited
         self._inorder_recursive_helper_queue(node, queue)
@@ -275,7 +276,7 @@ class BST:
         :return: the lowest value object in the tree, or None if tree is empty
         :rtype: Object
         """
-        if self.get_root() is None:
+        if self.is_empty():
             return None
 
         # performs inorder traversal and returns the first item dequeued from the returned queue
@@ -289,11 +290,12 @@ class BST:
         :return: the highest value object in the tree, or None if tree is empty
         :rtype: Object
         """
-        node = self.get_root()
-        if node is None:
+        if self.is_empty():
             return None
 
-        # traverses tree down to rightmost node and returns its value 
+        node = self.get_root()
+
+        # traverses tree down to rightmost node and returns its value
         while node.right is not None:
             node = node.right
 
@@ -302,9 +304,11 @@ class BST:
 
     def is_empty(self) -> bool:
         """
-        TODO: Write your implementation
+        returns True if the tree is empty. Returns false otherwise
+        :return: Boolean if tree is empty (True) or not (False)
+        :rtype: bool
         """
-        pass
+        return self.get_root() is None
 
     def make_empty(self) -> None:
         """
