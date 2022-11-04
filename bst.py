@@ -268,9 +268,16 @@ class BST:
 
     def find_min(self) -> object:
         """
-        TODO: Write your implementation
+        Returns the lowest value of the tree. If the tree is empty, return None
+        :return: the lowest value object in the tree, or None if tree is empty
+        :rtype: Object
         """
-        pass
+        if self.get_root() is None:
+            return None
+
+        # performs inorder traversal and returns the first item dequeued from the returned queue
+        inorder_queue = self.inorder_traversal()
+        return inorder_queue.dequeue()
 
     def find_max(self) -> object:
         """
