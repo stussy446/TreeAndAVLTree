@@ -107,9 +107,33 @@ class BST:
 
     def add(self, value: object) -> None:
         """
-        TODO: Write your implementation
+        Adds a new value to the tree
+        :param value: value object to be added to the tree
+        :type value: object
         """
-        pass
+        parent = None
+        node = self.get_root()
+        new_node = BSTNode(value)
+
+        # if the bst is empty, sets new node to the root of the tree
+        if node is None:
+            self._root = new_node
+            return
+
+        # traverse down the tree until getting to what will be the parent of new node
+        while node is not None:
+            parent = node
+            if value >= node.value:
+                node = node.right
+            else:
+                node = node.left
+
+        # if the new nodes value is greater than or equal to the parent value, set it as right child of parent,
+        # otherwise set it as the left child of the parent
+        if value >= parent.value:
+            parent.right = new_node
+        else:
+            parent.left = new_node
 
     def remove(self, value: object) -> bool:
         """
