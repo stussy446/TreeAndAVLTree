@@ -224,7 +224,7 @@ class BST:
 
         node = self.get_root()
 
-        # traverse down tree until value is either found or it is determined the value is not in the tree 
+        # traverse down tree until value is either found or it is determined the value is not in the tree
         while node is not None:
             if value > node.value:
                 node = node.right
@@ -237,9 +237,34 @@ class BST:
 
     def inorder_traversal(self) -> Queue:
         """
-        TODO: Write your implementation
+        Performs inorder traversal of the tree and returns a Queue object that contains values of visited nodes in the
+        order they were visited. Returns empty Queue if the tree is empty
+
+        :return: Queue object containing all the values of visited nodes
+        :rtype: Queue
         """
-        pass
+        queue = Queue()
+        node = self.get_root()
+
+        if node is None:
+            return queue
+
+        # makes recursive inorder traversal call to go through tree and add each value to queue in the order visited
+        self._inorder_recursive_helper(node, queue)
+
+        return queue
+
+    def _inorder_recursive_helper(self, node:BSTNode, queue: Queue) -> None:
+        """
+        recursively traverses tree via inorder_traversal, where each value is added to the queue after the values node
+        is visited for the second time.
+        :param node: current Node
+        :type node: BSTNode
+        """
+        if node is not None:
+            self._inorder_recursive_helper(node.left, queue)
+            queue.enqueue(node.value)
+            self._inorder_recursive_helper(node.right, queue)
 
     def find_min(self) -> object:
         """
