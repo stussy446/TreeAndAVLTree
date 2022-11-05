@@ -150,22 +150,29 @@ class BST:
         parent = None
         node = self.get_root()
 
-        # while node.value != value and node is not None:
-        #     parent = node
-        #     if value >= node.value:
-        #         node = node.right
-        #     else:
-        #         node = node.left
-        #
-        # if node is None:
-        #     return False
-        #
-        # if node.left is None and node.right is None:
-        #     self._remove_no_subtrees(parent, node)
-        # elif node.left is None and node.right is not None or node.right is None and node.left is not None:
-        #     self._remove_one_subtree(parent, node)
-        #
-        # return True
+        # traverses the tree looking for the requested value, assigns to node if found, returns False otherwise
+        while node.value != value and node is not None:
+            parent = node
+            if value > node.value:
+                node = node.right
+            else:
+                node = node.left
+
+            if node is None:
+                return False
+
+        # handles the removal based on whether the node to be removed has no children, one child, or two children
+        only_left_child = node.right is None and node.left is not None
+        only_right_child = node.left is None and node.right is not None
+
+        if node.left is None and node.right is None:
+            self._remove_no_subtrees(parent, node)
+        elif only_right_child or only_left_child:
+            self._remove_one_subtree(parent, node)
+        else:
+            self._remove_two_subtrees(parent, node)
+
+        return True
 
     def _remove_no_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
@@ -176,6 +183,12 @@ class BST:
         :param remove_node: BSTNode to be removed
         :type remove_node: BSTNode
         """
+
+        # empties the tree if the node to be removed is the root and its been determined the root has no children
+        if self.get_root() == remove_node:
+            self.make_empty()
+            return
+
         if remove_node.value >= remove_parent.value:
             remove_parent.right = None
         else:
@@ -191,11 +204,17 @@ class BST:
         :type remove_node: BSTNode
         """
         if remove_node.right is not None:
-            child_node = remove_node.right
-            remove_parent.right = child_node
+            if remove_parent is not None:
+                child_node = remove_node.right
+                remove_parent.right = child_node
+            else:
+                self._root = remove_node.right
         else:
-            child_node = remove_node.left
-            remove_parent.left = child_node
+            if remove_parent is not None:
+                child_node = remove_node.left
+                remove_parent.left = child_node
+            else:
+                self._root = remove_node.left
 
     def _remove_two_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
@@ -207,8 +226,25 @@ class BST:
         :param remove_node: BSTNode to be removed
         :type remove_node: BSTNode
         """
+        inorder_successor = remove_node.right
+        inorder_parent = None
 
-        pass
+        # traverses through remove_nodes right tree to the leftmost node, sets that node to inorder successor and
+        # the inorder successors parent to its parent node
+        while inorder_successor.left is not None:
+            inorder_parent = inorder_successor
+            inorder_successor = inorder_successor.left
+
+        # rearranges nodes as needed and frees up (IE removes) the remove_node
+        inorder_successor.left = remove_node.left
+        if remove_node.right != inorder_successor:
+            inorder_parent.left = inorder_successor.right
+            inorder_successor.right = remove_node.right
+
+        if inorder_successor.value >= remove_parent.value:
+            remove_parent.right = inorder_successor
+        else:
+            remove_parent.left = inorder_successor
 
     def contains(self, value: object) -> bool:
         """
@@ -323,48 +359,48 @@ class BST:
 
 if __name__ == '__main__':
 
-    print("\nPDF - method add() example 1")
-    print("----------------------------")
-    test_cases = (
-        (1, 2, 3),
-        (3, 2, 1),
-        (1, 3, 2),
-        (3, 1, 2),
-    )
-    for case in test_cases:
-        tree = BST(case)
-        print(tree)
-
-    print("\nPDF - method add() example 2")
-    print("----------------------------")
-    test_cases = (
-        (10, 20, 30, 40, 50),
-        (10, 20, 30, 50, 40),
-        (30, 20, 10, 5, 1),
-        (30, 20, 10, 1, 5),
-        (5, 4, 6, 3, 7, 2, 8),
-        (range(0, 30, 3)),
-        (range(0, 31, 3)),
-        (range(0, 34, 3)),
-        (range(10, -10, -2)),
-        ('A', 'B', 'C', 'D', 'E'),
-        (1, 1, 1, 1),
-    )
-    for case in test_cases:
-        tree = BST(case)
-        print('INPUT  :', case)
-        print('RESULT :', tree)
-
-    print("\nPDF - method add() example 3")
-    print("----------------------------")
-    for _ in range(100):
-        case = list(set(random.randrange(1, 20000) for _ in range(900)))
-        tree = BST()
-        for value in case:
-            tree.add(value)
-        if not tree.is_valid_bst():
-            raise Exception("PROBLEM WITH ADD OPERATION")
-    print('add() stress test finished')
+    # print("\nPDF - method add() example 1")
+    # print("----------------------------")
+    # test_cases = (
+    #     (1, 2, 3),
+    #     (3, 2, 1),
+    #     (1, 3, 2),
+    #     (3, 1, 2),
+    # )
+    # for case in test_cases:
+    #     tree = BST(case)
+    #     print(tree)
+    #
+    # print("\nPDF - method add() example 2")
+    # print("----------------------------")
+    # test_cases = (
+    #     (10, 20, 30, 40, 50),
+    #     (10, 20, 30, 50, 40),
+    #     (30, 20, 10, 5, 1),
+    #     (30, 20, 10, 1, 5),
+    #     (5, 4, 6, 3, 7, 2, 8),
+    #     (range(0, 30, 3)),
+    #     (range(0, 31, 3)),
+    #     (range(0, 34, 3)),
+    #     (range(10, -10, -2)),
+    #     ('A', 'B', 'C', 'D', 'E'),
+    #     (1, 1, 1, 1),
+    # )
+    # for case in test_cases:
+    #     tree = BST(case)
+    #     print('INPUT  :', case)
+    #     print('RESULT :', tree)
+    #
+    # print("\nPDF - method add() example 3")
+    # print("----------------------------")
+    # for _ in range(100):
+    #     case = list(set(random.randrange(1, 20000) for _ in range(900)))
+    #     tree = BST()
+    #     for value in case:
+    #         tree.add(value)
+    #     if not tree.is_valid_bst():
+    #         raise Exception("PROBLEM WITH ADD OPERATION")
+    # print('add() stress test finished')
 
     print("\nPDF - method remove() example 1")
     print("-------------------------------")
@@ -418,72 +454,83 @@ if __name__ == '__main__':
             raise Exception("PROBLEM WITH REMOVE OPERATION")
         print('RESULT :', tree)
 
-    print("\nPDF - method contains() example 1")
-    print("---------------------------------")
-    tree = BST([10, 5, 15])
-    print(tree.contains(15))
-    print(tree.contains(-10))
-    print(tree.contains(15))
+    # print("\nPDF - method remove() example steve")
+    # print("-------------------------------")
+    # tree = BST([-90, 7, -89, -53, -52, -79, 53, 87, -8, -67])
+    # for _ in case[:-2]:
+    #     root_value = tree.get_root().value
+    #     print('INPUT  :', tree, root_value)
+    #     tree.remove(root_value)
+    #     if not tree.is_valid_bst():
+    #         raise Exception("PROBLEM WITH REMOVE OPERATION")
+    #     print('RESULT :', tree)
 
-    print("\nPDF - method contains() example 2")
-    print("---------------------------------")
-    tree = BST()
-    print(tree.contains(0))
-
-    print("\nPDF - method inorder_traversal() example 1")
-    print("---------------------------------")
-    tree = BST([10, 20, 5, 15, 17, 7, 12])
-    print(tree.inorder_traversal())
-
-    print("\nPDF - method inorder_traversal() example 2")
-    print("---------------------------------")
-    tree = BST([8, 10, -4, 5, -1])
-    print(tree.inorder_traversal())
-
-    print("\nPDF - method find_min() example 1")
-    print("---------------------------------")
-    tree = BST([10, 20, 5, 15, 17, 7, 12])
-    print(tree)
-    print("Minimum value is:", tree.find_min())
-
-    print("\nPDF - method find_min() example 2")
-    print("---------------------------------")
-    tree = BST([8, 10, -4, 5, -1])
-    print(tree)
-    print("Minimum value is:", tree.find_min())
-
-    print("\nPDF - method find_max() example 1")
-    print("---------------------------------")
-    tree = BST([10, 20, 5, 15, 17, 7, 12])
-    print(tree)
-    print("Maximum value is:", tree.find_max())
-
-    print("\nPDF - method find_max() example 2")
-    print("---------------------------------")
-    tree = BST([8, 10, -4, 5, -1])
-    print(tree)
-    print("Maximum value is:", tree.find_max())
-
-    print("\nPDF - method is_empty() example 1")
-    print("---------------------------------")
-    tree = BST([10, 20, 5, 15, 17, 7, 12])
-    print("Tree is empty:", tree.is_empty())
-
-    print("\nPDF - method is_empty() example 2")
-    print("---------------------------------")
-    tree = BST()
-    print("Tree is empty:", tree.is_empty())
-
-    print("\nPDF - method make_empty() example 1")
-    print("---------------------------------")
-    tree = BST([10, 20, 5, 15, 17, 7, 12])
-    print("Tree before make_empty():", tree)
-    tree.make_empty()
-    print("Tree after make_empty(): ", tree)
-
-    print("\nPDF - method make_empty() example 2")
-    print("---------------------------------")
-    tree = BST()
-    print("Tree before make_empty():", tree)
-    tree.make_empty()
-    print("Tree after make_empty(): ", tree)
+    # print("\nPDF - method contains() example 1")
+    # print("---------------------------------")
+    # tree = BST([10, 5, 15])
+    # print(tree.contains(15))
+    # print(tree.contains(-10))
+    # print(tree.contains(15))
+    #
+    # print("\nPDF - method contains() example 2")
+    # print("---------------------------------")
+    # tree = BST()
+    # print(tree.contains(0))
+    #
+    # print("\nPDF - method inorder_traversal() example 1")
+    # print("---------------------------------")
+    # tree = BST([10, 20, 5, 15, 17, 7, 12])
+    # print(tree.inorder_traversal())
+    #
+    # print("\nPDF - method inorder_traversal() example 2")
+    # print("---------------------------------")
+    # tree = BST([8, 10, -4, 5, -1])
+    # print(tree.inorder_traversal())
+    #
+    # print("\nPDF - method find_min() example 1")
+    # print("---------------------------------")
+    # tree = BST([10, 20, 5, 15, 17, 7, 12])
+    # print(tree)
+    # print("Minimum value is:", tree.find_min())
+    #
+    # print("\nPDF - method find_min() example 2")
+    # print("---------------------------------")
+    # tree = BST([8, 10, -4, 5, -1])
+    # print(tree)
+    # print("Minimum value is:", tree.find_min())
+    #
+    # print("\nPDF - method find_max() example 1")
+    # print("---------------------------------")
+    # tree = BST([10, 20, 5, 15, 17, 7, 12])
+    # print(tree)
+    # print("Maximum value is:", tree.find_max())
+    #
+    # print("\nPDF - method find_max() example 2")
+    # print("---------------------------------")
+    # tree = BST([8, 10, -4, 5, -1])
+    # print(tree)
+    # print("Maximum value is:", tree.find_max())
+    #
+    # print("\nPDF - method is_empty() example 1")
+    # print("---------------------------------")
+    # tree = BST([10, 20, 5, 15, 17, 7, 12])
+    # print("Tree is empty:", tree.is_empty())
+    #
+    # print("\nPDF - method is_empty() example 2")
+    # print("---------------------------------")
+    # tree = BST()
+    # print("Tree is empty:", tree.is_empty())
+    #
+    # print("\nPDF - method make_empty() example 1")
+    # print("---------------------------------")
+    # tree = BST([10, 20, 5, 15, 17, 7, 12])
+    # print("Tree before make_empty():", tree)
+    # tree.make_empty()
+    # print("Tree after make_empty(): ", tree)
+    #
+    # print("\nPDF - method make_empty() example 2")
+    # print("---------------------------------")
+    # tree = BST()
+    # print("Tree before make_empty():", tree)
+    # tree.make_empty()
+    # print("Tree after make_empty(): ", tree)
