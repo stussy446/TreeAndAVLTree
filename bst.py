@@ -203,18 +203,21 @@ class BST:
         :param remove_node: BSTNode to be removed
         :type remove_node: BSTNode
         """
+        
         if remove_node.right is not None:
-            if remove_parent is not None:
-                child_node = remove_node.right
+            child_node = remove_node.right
+        elif remove_node.left is not None:
+            child_node = remove_node.left
+
+        # if there is a parent, set the child node to the same side of the parent that the node being removed was in
+        # otherwise, set the root to the child node
+        if remove_parent is not None:
+            if remove_node == remove_parent.right:
                 remove_parent.right = child_node
-            else:
-                self._root = remove_node.right
-        else:
-            if remove_parent is not None:
-                child_node = remove_node.left
+            elif remove_node == remove_parent.left:
                 remove_parent.left = child_node
-            else:
-                self._root = remove_node.left
+        else:
+            self._root = child_node
 
     def _remove_two_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
@@ -227,7 +230,7 @@ class BST:
         :type remove_node: BSTNode
         """
         inorder_successor = remove_node.right
-        inorder_parent = None
+        inorder_parent = remove_node
 
         # traverses through remove_nodes right tree to the leftmost node, sets that node to inorder successor and
         # the inorder successors parent to its parent node
@@ -237,14 +240,28 @@ class BST:
 
         # rearranges nodes as needed and frees up (IE removes) the remove_node
         inorder_successor.left = remove_node.left
-        if remove_node.right != inorder_successor:
+
+        if inorder_successor != remove_node.right:
             inorder_parent.left = inorder_successor.right
             inorder_successor.right = remove_node.right
 
-        if inorder_successor.value >= remove_parent.value:
-            remove_parent.right = inorder_successor
+        if remove_parent is not None:
+            if inorder_successor.value >= remove_parent.value:
+                remove_parent.right = inorder_successor
+            else:
+                remove_parent.left = inorder_successor
         else:
-            remove_parent.left = inorder_successor
+            self._root = inorder_successor
+
+        # if remove_node.right != inorder_successor and inorder_parent is not None:
+        #     inorder_parent.left = inorder_successor.right
+        #     inorder_successor.right = remove_node.right
+        #
+        # if remove_parent is not None:
+        #     if inorder_successor.value >= remove_parent.value:
+        #         remove_parent.right = inorder_successor
+        #     else:
+        #         remove_parent.left = inorder_successor
 
     def contains(self, value: object) -> bool:
         """
@@ -454,16 +471,23 @@ if __name__ == '__main__':
             raise Exception("PROBLEM WITH REMOVE OPERATION")
         print('RESULT :', tree)
 
-    # print("\nPDF - method remove() example steve")
-    # print("-------------------------------")
-    # tree = BST([-90, 7, -89, -53, -52, -79, 53, 87, -8, -67])
-    # for _ in case[:-2]:
-    #     root_value = tree.get_root().value
-    #     print('INPUT  :', tree, root_value)
-    #     tree.remove(root_value)
-    #     if not tree.is_valid_bst():
-    #         raise Exception("PROBLEM WITH REMOVE OPERATION")
-    #     print('RESULT :', tree)
+    print("\nPDF - method remove() example steve")
+    print("-------------------------------")
+    tree = BST([-30, 8, 73, -55, 81, 51, -43, -37, -4, -97])
+    tree.remove(-30)
+    if not tree.is_valid_bst():
+            raise Exception("PROBLEM WITH REMOVE OPERATION")
+    print('RESULT :', tree)
+    tree.remove(73)
+    if not tree.is_valid_bst():
+        raise Exception("PROBLEM WITH REMOVE OPERATION")
+    print('RESULT :', tree)
+    tree.remove(81)
+    if not tree.is_valid_bst():
+        raise Exception("PROBLEM WITH REMOVE OPERATION")
+    print('RESULT :', tree)
+
+
 
     # print("\nPDF - method contains() example 1")
     # print("---------------------------------")
