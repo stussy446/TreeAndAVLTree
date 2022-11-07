@@ -253,16 +253,6 @@ class BST:
         else:
             self._root = inorder_successor
 
-        # if remove_node.right != inorder_successor and inorder_parent is not None:
-        #     inorder_parent.left = inorder_successor.right
-        #     inorder_successor.right = remove_node.right
-        #
-        # if remove_parent is not None:
-        #     if inorder_successor.value >= remove_parent.value:
-        #         remove_parent.right = inorder_successor
-        #     else:
-        #         remove_parent.left = inorder_successor
-
     def contains(self, value: object) -> bool:
         """
         Returns True if value is in the tree. Returns False if value is not in tree or the tree is empty.
