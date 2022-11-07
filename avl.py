@@ -16,7 +16,6 @@ class AVLNode(BSTNode):
     AVL Tree Node class. Inherits from BSTNode
     DO NOT CHANGE THIS CLASS IN ANY WAY
     """
-
     def __init__(self, value: object) -> None:
         """
         Initialize a new AVL node
@@ -107,38 +106,7 @@ class AVL(BST):
 
         :param value: value to be added to the tree
         """
-        if self.contains(value):
-            return
-
-        node = self.get_root()
-        new_node = AVLNode(value)
-
-        # if the bst is empty, sets new node to the root of the tree
-        if self.is_empty():
-            self._root = new_node
-            return
-
-        # traverse down the tree until getting to what will be the parent of new node
-        while node is not None:
-            new_node.parent = node
-            if value >= node.value:
-                node = node.right
-            else:
-                node = node.left
-
-        # if the new nodes value is greater than or equal to the parent value, set it as right child of parent,
-        # otherwise set it as the left child of the parent
-        if value >= new_node.parent.value:
-            new_node.parent.right = new_node
-        else:
-            new_node.parent.left = new_node
-
-        added_node = new_node
-        added_parent = new_node.parent
-
-        while added_parent is not None:
-            self._rebalance(added_parent)
-            added_parent = added_parent.parent
+        pass
 
     def remove(self, value: object) -> bool:
         """
@@ -167,7 +135,6 @@ class AVL(BST):
         :param node: AVLNode node which balance factor is to be calculated
         :return: int
         """
-        
         return self._get_height(node.left) - self._get_height(node.right)
 
     def _get_height(self, node: AVLNode) -> int:
@@ -242,29 +209,16 @@ class AVL(BST):
             if self._balance_factor(node.left) > 0:
                 node.left = self._rotate_left(node.left)
                 node.left.parent = node
+            # maybe need to add subRoot logic
 
-            new_root = self._rotate_right(node)
-            new_root.parent = node.parent
-            if new_root.value > new_root.parent.value:
-                new_root.parent.right = new_root
+            elif self._balance_factor(node) > 1:
+                if self._balance_factor(node.right) < 0:
+                    node.right = self._rotate_right(node.right)
+                    node.right.parent = node
+                # maybe need to add subRoot logic 
+
             else:
-                new_root.parent.left = new_root
-
-        elif self._balance_factor(node) > 1:
-            if self._balance_factor(node.right) < 0:
-                node.right = self._rotate_right(node.right)
-                node.right.parent = node
-
-            new_root = self._rotate_left(node)
-            new_root.parent = node.parent
-            if new_root.value > new_root.parent.value:
-                new_root.parent.right = new_root
-            else:
-                new_root.parent.left = new_root
-
-        else:
-            self._update_height(node)
-
+                self._update_height(node)
 
 # ------------------- BASIC TESTING -----------------------------------------
 
@@ -286,10 +240,10 @@ if __name__ == '__main__':
     print("\nPDF - method add() example 2")
     print("----------------------------")
     test_cases = (
-        (10, 20, 30, 40, 50),  # RR, RR
-        (10, 20, 30, 50, 40),  # RR, RL
-        (30, 20, 10, 5, 1),  # LL, LL
-        (30, 20, 10, 1, 5),  # LL, LR
+        (10, 20, 30, 40, 50),   # RR, RR
+        (10, 20, 30, 50, 40),   # RR, RL
+        (30, 20, 10, 5, 1),     # LL, LL
+        (30, 20, 10, 1, 5),     # LL, LR
         (5, 4, 6, 3, 7, 2, 8),  # LL, RR
         (range(0, 30, 3)),
         (range(0, 31, 3)),
