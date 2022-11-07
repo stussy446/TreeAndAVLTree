@@ -133,15 +133,26 @@ class AVL(BST):
 
     def _balance_factor(self, node: AVLNode) -> int:
         """
-        TODO: Write your implementation
+        calculates the given Nodes balance factor (right subtree - left subtree)
+
+        :param node: AVLNode which balance factor will be calculated
+        :return: int
         """
-        pass
+        return self._get_height(node.left) - self._get_height(node.right)
+
 
     def _get_height(self, node: AVLNode) -> int:
         """
-        TODO: Write your implementation
+        Returns the height of the given node
+
+        :param node: AVLNode which the height will come from
+        :return: int
         """
-        pass
+        if node is None:
+            return -1
+
+        return node.height
+
 
     def _rotate_left(self, node: AVLNode) -> AVLNode:
         """
@@ -157,9 +168,11 @@ class AVL(BST):
 
     def _update_height(self, node: AVLNode) -> None:
         """
-        TODO: Write your implementation
+        Updates the height of the provided AVLNode
+
+        :param node: AVLNode which height will be updated
         """
-        pass
+        node.height = max(self._get_height(node.left), self._get_height(node.right)) + 1
 
     def _rebalance(self, node: AVLNode) -> None:
         """
@@ -171,6 +184,19 @@ class AVL(BST):
 
 
 if __name__ == '__main__':
+
+    print("steve test cases")
+    print("----------------------------")
+    test_cases = (
+        (1, 2, 3),  # RR
+        (3, 2, 1),  # LL
+        (1, 3, 2),  # RL
+        (3, 1, 2),  # LR
+    )
+
+    for case in test_cases:
+        tree = AVL(case)
+        print(tree)
 
     print("\nPDF - method add() example 1")
     print("----------------------------")
