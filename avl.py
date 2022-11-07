@@ -156,15 +156,45 @@ class AVL(BST):
 
     def _rotate_left(self, node: AVLNode) -> AVLNode:
         """
-        TODO: Write your implementation
+        Rotates AVL tree left centered around node
+
+        :param node: AVLNode to be rotated around
+        :return: AVLNode (new root of the subtree)
         """
-        pass
+        child = node.right
+        node.right = child.left
+
+        if node.right is not None:
+            node.right.parent = node
+
+        child.left = node
+        node.parent = child
+
+        self._update_height(node)
+        self._update_height(child)
+
+        return child
 
     def _rotate_right(self, node: AVLNode) -> AVLNode:
         """
-        TODO: Write your implementation
+        Rotates AVL tree right centered around node
+
+        :param node: AVLNode to be rotated around
+        :return: AVLNode (new root of the subtree)
         """
-        pass
+        child = node.left
+        node.left = child.right
+
+        if node.left is not None:
+            node.left.parent = node
+
+        child.right = node
+        node.parent = child
+
+        self._update_height(node)
+        self._update_height(child)
+
+        return child 
 
     def _update_height(self, node: AVLNode) -> None:
         """
@@ -196,7 +226,6 @@ if __name__ == '__main__':
 
     for case in test_cases:
         tree = AVL(case)
-        print(tree)
 
     print("\nPDF - method add() example 1")
     print("----------------------------")
