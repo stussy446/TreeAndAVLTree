@@ -128,12 +128,6 @@ class AVL(BST):
         """
         pass
 
-    # It's highly recommended to implement                          #
-    # the following methods for balancing the AVL Tree.             #
-    # Remove these comments.                                        #
-    # Remove these method stubs if you decide not to use them.      #
-    # Change these methods in any way you'd like.                   #
-
     def _balance_factor(self, node: AVLNode) -> int:
         """
         Takes in an AVLNode and returns an integer representing the balance factor of that particular node
@@ -142,7 +136,7 @@ class AVL(BST):
         :return: int
         """
         return self._get_height(node.left) - self._get_height(node.right)
-    
+
     def _get_height(self, node: AVLNode) -> int:
         """
         Takes in an AVLNode and returns an integer representing the height of that particular node
@@ -162,7 +156,19 @@ class AVL(BST):
         :param node: AVLNode to be rotated around
         :return: AVLNode
         """
-        pass
+        child = node.right
+        node.right = child.left
+
+        if node.right is not None:
+            node.right.parent = node
+
+        child.left = node
+        node.parent = child
+
+        self._update_height(node)
+        self._update_height(child)
+
+        return child
 
     def _rotate_right(self, node: AVLNode) -> AVLNode:
         """
@@ -171,20 +177,48 @@ class AVL(BST):
         :param node: AVLNode to be rotated around
         :return: AVLNode
         """
-        pass
+        child = node.left
+        node.left = child.right
+
+        if node.left is not None:
+            node.left.parent = node
+
+        child.right = node
+        node.parent = child
+
+        self._update_height(node)
+        self._update_height(child)
+
+        return child
 
     def _update_height(self, node: AVLNode) -> None:
         """
         Takes in an AVLNode and updates the node's height
+
         :param node: AVLNode which height is to be updated
         """
         node.height = max(self._get_height(node.left), self._get_height(node.right) + 1)
 
     def _rebalance(self, node: AVLNode) -> None:
         """
-        TODO: Write your implementation
+        Take in an AVLNode and re-balances the AVL tree to ensure the tree meets AVL tree balance requirements
+
+        :param node: AVLNode to start the re-balance around
         """
-        pass
+        if self._balance_factor(node) < -1:
+            if self._balance_factor(node.left) > 0:
+                node.left = self._rotate_left(node.left)
+                node.left.parent = node
+            # maybe need to add subRoot logic
+
+            elif self._balance_factor(node) > 1:
+                if self._balance_factor(node.right) < 0:
+                    node.right = self._rotate_right(node.right)
+                    node.right.parent = node
+                # maybe need to add subRoot logic 
+
+            else:
+                self._update_height(node)
 
 # ------------------- BASIC TESTING -----------------------------------------
 
