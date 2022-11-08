@@ -173,7 +173,9 @@ class AVL(BST):
         if node is None:
             return 0
 
-        return self._get_height(node.left) - self._get_height(node.right)
+        balance_factor = self._get_height(node.right) - self._get_height(node.left)
+
+        return balance_factor
 
 
     def _get_height(self, node: AVLNode) -> int:
@@ -204,12 +206,18 @@ class AVL(BST):
 
         if node.parent is not None:
             child.parent = node.parent
+        else:
+            child.parent = None
 
         child.left = node
         node.parent = child
 
         self._update_height(node)
         self._update_height(child)
+
+        if child.value == self.get_root():
+            self._root = child
+            child.parent = None
 
         return child
 
@@ -242,9 +250,15 @@ class AVL(BST):
 
         if node.parent is not None:
             child.parent = node.parent
+        else:
+            child.parent = None
 
         child.right = node
         node.parent = child
+
+        if child.value == self.get_root():
+            self._root = child
+            child.parent = None
 
         self._update_height(node)
         self._update_height(child)
@@ -270,14 +284,19 @@ class AVL(BST):
 
         :param node: AVLNode which height will be updated
         """
+        if node is None:
+            return
+
         node.height = max(self._get_height(node.left), self._get_height(node.right)) + 1
 
     def _rebalance(self, node: AVLNode) -> None:
         """
-        Receives an AVLNode and rebalances AVL tree as needed based on blance factor
+        Receives an AVLNode and rebalances AVL tree as needed based on balance factor
         :param node: current node
         :type  node: AVLNode
         """
+        original_parent = node.parent
+
         if self._balance_factor(node) < -1:
             if self._balance_factor(node.left) > 0:
                 node.left = self._rotate_left(node.left)
@@ -286,13 +305,14 @@ class AVL(BST):
             # if the passed in node has a parent, set the sub root as one of its children, otherwise set subroot parent
             # to none
             new_sub_root = self._rotate_right(node)
-            if node.parent is not None:
-                if new_sub_root.value < node.parent.value:
-                    new_sub_root.parent.left = node.parent
+            if original_parent is not None:
+                if new_sub_root.value < original_parent.value:
+                    new_sub_root.parent.left = original_parent
                 else:
-                    new_sub_root.parent.right = node.parent
+                    new_sub_root.parent.right = original_parent
             else:
                 new_sub_root.parent = None
+                self._root = new_sub_root
 
         elif self._balance_factor(node) > 1:
             if self._balance_factor(node.right) < 0:
@@ -300,13 +320,14 @@ class AVL(BST):
                 node.right.parent = node
 
             new_sub_root = self._rotate_left(node)
-            if node.parent is not None:
-                if new_sub_root.value < node.parent.value:
-                    new_sub_root.parent.left = node.parent
+            if original_parent is not None:
+                if new_sub_root.value < original_parent.value:
+                    new_sub_root.parent.left = original_parent.value
                 else:
-                    new_sub_root.parent.right = node.parent
+                    new_sub_root.parent.right = original_parent
             else:
                 new_sub_root.parent = None
+                self._root = new_sub_root
 
         else:
             self._update_height(node)
