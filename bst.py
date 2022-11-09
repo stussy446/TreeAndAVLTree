@@ -118,7 +118,7 @@ class BST:
 
         self.add_recursive_helper(node, value)
 
-    def add_recursive_helper(self, root, value):
+    def add_recursive_helper(self, root: BSTNode, value: object) -> BSTNode:
         """
         test add recursive function
         :param root:
@@ -128,14 +128,12 @@ class BST:
         if root is None:
             return BSTNode(value)
         else:
-            if root.value == value:
-                return root
-            elif root.value < value:
+            if root.value <= value:
                 root.right = self.add_recursive_helper(root.right, value)
             else:
                 root.left = self.add_recursive_helper(root.left, value)
 
-        return root
+            return root
     def remove(self, value: object) -> bool:
         """
         Removes a value from the tree, returns True if value is removed and False otherwise
