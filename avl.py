@@ -4,7 +4,8 @@
 # Assignment: 4
 # Due Date: 11/15/2022
 # Description: Implements AVL Tree
-import ntpath
+
+
 import random
 from queue_and_stack import Queue, Stack
 from bst import BSTNode, BST
@@ -100,42 +101,9 @@ class AVL(BST):
 
     def add(self, value: object) -> None:
         """
-        Adds new AVLNode with value to the AVL tree and rebalances the tree as necessary
-        :param value: value to be added to tree
-        :type  value: object
+        TODO: Write your implementation
         """
-        # if tree is empty, set value as root
-        if self.is_empty():
-            self._root = AVLNode(value)
-            return
-
-        node = self.get_root()
-        parent = None
-
-        # traverses to where insert will happen, if a nodes value is equal just return since no duplicates allowed
-        while node is not None:
-            parent = node
-            if value < node.value:
-                node = node.left
-            elif value > node.value:
-                node = node.right
-            else:
-                return
-
-        # adds the new node to the tree
-        if value > parent.value:
-            parent.right = AVLNode(value)
-            new_node = parent.right
-            new_node.parent = parent
-        else:
-            parent.left = AVLNode(value)
-            new_node = parent.left
-            new_node.parent = parent
-
-        # goes back up the tree to rebalance as needed
-        while parent is not None:
-            self._rebalance(parent)
-            parent = parent.parent
+        pass
 
     def remove(self, value: object) -> bool:
         """
@@ -170,9 +138,6 @@ class AVL(BST):
         :param node: AVLNode which balance factor will be calculated
         :return: int
         """
-        if node is None:
-            return 0
-
         return self._get_height(node.left) - self._get_height(node.right)
 
 
@@ -198,12 +163,9 @@ class AVL(BST):
         """
         child = node.right
         node.right = child.left
-        if node.right is not None:
-            # inserts new parent into node
-            node.right.parent = node
 
-        if node.parent is not None:
-            child.parent = node.parent
+        if node.right is not None:
+            node.right.parent = node
 
         child.left = node
         node.parent = child
@@ -212,20 +174,6 @@ class AVL(BST):
         self._update_height(child)
 
         return child
-
-        # child = node.right
-        # node.right = child.left
-        #
-        # if node.right is not None:
-        #     node.right.parent = node
-        #
-        # child.left = node
-        # node.parent = child
-        #
-        # self._update_height(node)
-        # self._update_height(child)
-        #
-        # return child
 
     def _rotate_right(self, node: AVLNode) -> AVLNode:
         """
@@ -236,12 +184,9 @@ class AVL(BST):
         """
         child = node.left
         node.left = child.right
-        if node.left is not None:
-            # inserts new parent into node
-            node.left.parent = node
 
-        if node.parent is not None:
-            child.parent = node.parent
+        if node.left is not None:
+            node.left.parent = node
 
         child.right = node
         node.parent = child
@@ -249,20 +194,7 @@ class AVL(BST):
         self._update_height(node)
         self._update_height(child)
 
-        return child
-        # child = node.left
-        # node.left = child.right
-        #
-        # if node.left is not None:
-        #     node.left.parent = node
-        #
-        # child.right = node
-        # node.parent = child
-        #
-        # self._update_height(node)
-        # self._update_height(child)
-        #
-        # return child
+        return child 
 
     def _update_height(self, node: AVLNode) -> None:
         """
@@ -274,45 +206,9 @@ class AVL(BST):
 
     def _rebalance(self, node: AVLNode) -> None:
         """
-        Receives an AVLNode and rebalances AVL tree as needed based on blance factor
-        :param node: current node
-        :type  node: AVLNode
+        TODO: Write your implementation
         """
-        if self._balance_factor(node) < -1:
-            if self._balance_factor(node.left) > 0:
-                node.left = self._rotate_left(node.left)
-                node.left.parent = node
-
-            # if the passed in node has a parent, set the sub root as one of its children, otherwise set subroot parent
-            # to none
-            new_sub_root = self._rotate_right(node)
-            if node.parent is not None:
-                if new_sub_root.value < node.parent.value:
-                    new_sub_root.parent.left = node.parent
-                else:
-                    new_sub_root.parent.right = node.parent
-            else:
-                new_sub_root.parent = None
-
-        elif self._balance_factor(node) > 1:
-            if self._balance_factor(node.right) < 0:
-                node.right = self._rotate_right(node.right)
-                node.right.parent = node
-
-            new_sub_root = self._rotate_left(node)
-            if node.parent is not None:
-                if new_sub_root.value < node.parent.value:
-                    new_sub_root.parent.left = node.parent
-                else:
-                    new_sub_root.parent.right = node.parent
-            else:
-                new_sub_root.parent = None
-
-        else:
-            self._update_height(node)
-
-
-
+        pass
 
 # ------------------- BASIC TESTING -----------------------------------------
 
