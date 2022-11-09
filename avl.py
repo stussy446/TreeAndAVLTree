@@ -126,13 +126,12 @@ class AVL(BST):
                 return
 
         # if new node value is greater than parent value, set to right child, otherwise set to left child
+        new_node = AVLNode(value)
         if value > parent.value:
-            parent.right = AVLNode(value)
-            new_node = parent.right
+            parent.right = new_node
             new_node.parent = parent
         else:
-            parent.left = AVLNode(value)
-            new_node = parent.left
+            parent.left = new_node
             new_node.parent = parent
 
         # traverse back up the tree, rebalancing as needed
