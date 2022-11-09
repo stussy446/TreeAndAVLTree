@@ -106,38 +106,39 @@ class AVL(BST):
         :param value: value to be inserted into AVL tree
         :type  value: Object
         """
-        # if AVL tree is empty, sets new node to root
         if self.is_empty():
             self._root = AVLNode(value)
-            return
 
-        parent = None
         node = self.get_root()
+        self.add_recursive_helper(node, value)
 
-        # traverse own the tree until getting to what will be the parent of new node
-        while node is not None:
-            parent = node
-            if value < node.value:
-                node = node.left
-            elif value > node.value:
-                node = node.right
-            else:
-                # no duplicates allowed so just return if duplicate
-                return
-
-        # if new node value is greater than parent value, set to right child, otherwise set to left child
-        new_node = AVLNode(value)
-        if value > parent.value:
-            parent.right = new_node
-            new_node.parent = parent
+    def add_recursive_helper(self, root: BSTNode, value: object) -> BSTNode:
+        """
+        test add recursive function
+        :param root:
+        :param value:
+        :return:
+        """
+        # perform normal bst insert process
+        if root is None:
+            return AVLNode(value)
+        elif root.value == value:
+            return root
         else:
-            parent.left = new_node
-            new_node.parent = parent
+            if root.value < value:
+                root.right = self.add_recursive_helper(root.right, value)
+                root.right.parent = root
+                parent = root.right.parent
+            else:
+                root.left = self.add_recursive_helper(root.left, value)
+                root.left.parent = root
+                parent = root.left.parent
 
-        # traverse back up the tree, rebalancing as needed
-        while parent is not None:
-            self._rebalance(parent)
-            parent = parent.parent
+        self._update_height(root)
+
+        self._rebalance(parent)
+
+        return root
 
     def remove(self, value: object) -> bool:
         """
