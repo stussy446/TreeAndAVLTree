@@ -123,20 +123,25 @@ class AVL(BST):
         # perform normal bst insert process
         if root is None:
             return AVLNode(value)
+
         if root.value == value:
             return
+
         else:
             if root.value < value:
                 root.right = self.add_recursive_helper(root.right, value)
-                root.right.parent = root
-                parent = root.right.parent
+                parent = root
+                root.right.parent = parent
             else:
                 root.left = self.add_recursive_helper(root.left, value)
-                root.left.parent = root
-                parent = root.left.parent
+                parent = root
+                root.left.parent = parent
 
 
         self._rebalance(parent)
+
+        if parent.parent is None:
+            return
 
         return root
 
@@ -261,7 +266,8 @@ class AVL(BST):
         :param node: AVLNode to potentially be rebalanced
         :type  node: AVLNode
         """
-        # original_parent = node.parent
+        if node is None:
+            return
 
         # if we enter this we have a L-L imbalance at least
         if self._balance_factor(node) < -1:
@@ -275,12 +281,17 @@ class AVL(BST):
             new_subroot = self._rotate_right(node)
             if ancestor is None:
                 new_subroot.parent = None
+
                 self._root = new_subroot
             else:
                 if new_subroot.value < ancestor.value:
                     ancestor.left = new_subroot
                 else:
-                    ancestor.right = new_subroot
+                    new_subroot.right = ancestor.left
+                    new_subroot.right.parent = new_subroot
+
+                    new_subroot.parent = ancestor
+                    ancestor.left = new_subroot
 
         # if we enter this we have a R-R imbalance at least
         elif self._balance_factor(node) > 1:
@@ -298,6 +309,10 @@ class AVL(BST):
                 if new_subroot.value < ancestor.value:
                     ancestor.left = new_subroot
                 else:
+                    new_subroot.left = node
+                    new_subroot.left.parent = new_subroot
+
+                    new_subroot.parent = ancestor
                     ancestor.right = new_subroot
 
         else:
