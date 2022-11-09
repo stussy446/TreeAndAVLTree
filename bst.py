@@ -111,30 +111,26 @@ class BST:
         :param value: value object to be added to the tree
         :type value: object
         """
-        parent = None
         node = self.get_root()
-        new_node = BSTNode(value)
 
-        # if the bst is empty, sets new node to the root of the tree
-        if self.is_empty():
-            self._root = new_node
-            return
+        self.add_recursive_helper(node, value)
 
-        # traverse down the tree until getting to what will be the parent of new node
-        while node is not None:
-            parent = node
-            if value >= node.value:
-                node = node.right
-            else:
-                node = node.left
-
-        # if the new nodes value is greater than or equal to the parent value, set it as right child of parent,
-        # otherwise set it as the left child of the parent
-        if value >= parent.value:
-            parent.right = new_node
+    def add_recursive_helper(self, root, value):
+        """
+        test add recursive function
+        :param root:
+        :param value:
+        :return:
+        """
+        if root is None:
+            return BSTNode(value)
         else:
-            parent.left = new_node
-
+            if root.value == value:
+                return root
+            elif root.value < value:
+                root.right = self.add_recursive_helper(root.right, value)
+            else:
+                root.left = self.add_recursive_helper(root.left, value)
     def remove(self, value: object) -> bool:
         """
         Removes a value from the tree, returns True if value is removed and False otherwise
@@ -376,48 +372,48 @@ class BST:
 
 if __name__ == '__main__':
 
-    # print("\nPDF - method add() example 1")
-    # print("----------------------------")
-    # test_cases = (
-    #     (1, 2, 3),
-    #     (3, 2, 1),
-    #     (1, 3, 2),
-    #     (3, 1, 2),
-    # )
-    # for case in test_cases:
-    #     tree = BST(case)
-    #     print(tree)
-    #
-    # print("\nPDF - method add() example 2")
-    # print("----------------------------")
-    # test_cases = (
-    #     (10, 20, 30, 40, 50),
-    #     (10, 20, 30, 50, 40),
-    #     (30, 20, 10, 5, 1),
-    #     (30, 20, 10, 1, 5),
-    #     (5, 4, 6, 3, 7, 2, 8),
-    #     (range(0, 30, 3)),
-    #     (range(0, 31, 3)),
-    #     (range(0, 34, 3)),
-    #     (range(10, -10, -2)),
-    #     ('A', 'B', 'C', 'D', 'E'),
-    #     (1, 1, 1, 1),
-    # )
-    # for case in test_cases:
-    #     tree = BST(case)
-    #     print('INPUT  :', case)
-    #     print('RESULT :', tree)
-    #
-    # print("\nPDF - method add() example 3")
-    # print("----------------------------")
-    # for _ in range(100):
-    #     case = list(set(random.randrange(1, 20000) for _ in range(900)))
-    #     tree = BST()
-    #     for value in case:
-    #         tree.add(value)
-    #     if not tree.is_valid_bst():
-    #         raise Exception("PROBLEM WITH ADD OPERATION")
-    # print('add() stress test finished')
+    print("\nPDF - method add() example 1")
+    print("----------------------------")
+    test_cases = (
+        (1, 2, 3),
+        (3, 2, 1),
+        (1, 3, 2),
+        (3, 1, 2),
+    )
+    for case in test_cases:
+        tree = BST(case)
+        print(tree)
+
+    print("\nPDF - method add() example 2")
+    print("----------------------------")
+    test_cases = (
+        (10, 20, 30, 40, 50),
+        (10, 20, 30, 50, 40),
+        (30, 20, 10, 5, 1),
+        (30, 20, 10, 1, 5),
+        (5, 4, 6, 3, 7, 2, 8),
+        (range(0, 30, 3)),
+        (range(0, 31, 3)),
+        (range(0, 34, 3)),
+        (range(10, -10, -2)),
+        ('A', 'B', 'C', 'D', 'E'),
+        (1, 1, 1, 1),
+    )
+    for case in test_cases:
+        tree = BST(case)
+        print('INPUT  :', case)
+        print('RESULT :', tree)
+
+    print("\nPDF - method add() example 3")
+    print("----------------------------")
+    for _ in range(100):
+        case = list(set(random.randrange(1, 20000) for _ in range(900)))
+        tree = BST()
+        for value in case:
+            tree.add(value)
+        if not tree.is_valid_bst():
+            raise Exception("PROBLEM WITH ADD OPERATION")
+    print('add() stress test finished')
 
     print("\nPDF - method remove() example 1")
     print("-------------------------------")
