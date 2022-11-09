@@ -16,6 +16,7 @@ class AVLNode(BSTNode):
     AVL Tree Node class. Inherits from BSTNode
     DO NOT CHANGE THIS CLASS IN ANY WAY
     """
+
     def __init__(self, value: object) -> None:
         """
         Initialize a new AVL node
@@ -101,9 +102,38 @@ class AVL(BST):
 
     def add(self, value: object) -> None:
         """
-        TODO: Write your implementation
+        Adds a new AVLNode containing the value into the AVL tree and rebalances as necessary
+        :param value: value to be inserted into AVL tree
+        :type  value: Object
         """
-        pass
+        parent = None
+        node = self.get_root()
+
+        # if AVL tree is empty, sets new node to root
+        if self.is_empty():
+            self._root = AVLNode(value)
+            return
+
+            # traverse own the tree until getting to what will be the parent of new node
+        while node is not None:
+            parent = node
+            if value > node.value:
+                node = node.right
+            elif value < node.value:
+                node = node.left
+            else:
+                # no duplicates allowed so just return if duplicate
+                return
+
+                # if new node value is greater than parent value, set to right child, otherwise set to left child
+        if value > parent.value:
+            parent.right = AVLNode(value)
+        else:
+            parent.left = AVLNode(value)
+
+        # traverse back up the tree, rebalancing as needed
+        while parent is not None:
+            self._rebalance(parent)
 
     def remove(self, value: object) -> bool:
         """
@@ -138,8 +168,7 @@ class AVL(BST):
         :param node: AVLNode which balance factor will be calculated
         :return: int
         """
-        return self._get_height(node.left) - self._get_height(node.right)
-
+        return self._get_height(node.right) - self._get_height(node.left)
 
     def _get_height(self, node: AVLNode) -> int:
         """
@@ -152,7 +181,6 @@ class AVL(BST):
             return -1
 
         return node.height
-
 
     def _rotate_left(self, node: AVLNode) -> AVLNode:
         """
@@ -194,7 +222,7 @@ class AVL(BST):
         self._update_height(node)
         self._update_height(child)
 
-        return child 
+        return child
 
     def _update_height(self, node: AVLNode) -> None:
         """
@@ -206,9 +234,48 @@ class AVL(BST):
 
     def _rebalance(self, node: AVLNode) -> None:
         """
-        TODO: Write your implementation
+        Takes in an AVLNode and rebalances tree as necessary
+        :param node: AVLNode to potentially be rebalanced
+        :type  node: AVLNode
         """
-        pass
+        if self._balance_factor(node) < -1:
+            # checks if double rotation is needed and performs first rotation if it is
+            if self._balance_factor(node.left) > 0:
+                node.left = self._rotate_left(node.left)
+                node.left.parent = node
+
+            new_subroot = self._rotate_right(node)
+
+            # if the node being rebalanced parent is not none, set one of the parents children to the new_subroot (c)
+            if node.parent is not None:
+                if node.parent.value > new_subroot.value:
+                    node.parent.left = new_subroot
+                else:
+                    node.parent.right = new_subroot
+            else:
+                new_subroot.parent = None
+                self._root = new_subroot
+
+        elif self._balance_factor(node) > 1:
+            # checks if double rotation is needed and performs first rotation if it is
+            if self._balance_factor(node.right) < 0:
+                node.right = self._rotate_right(node.right)
+                node.right.parent = node
+
+            new_subroot = self._rotate_left(node)
+
+            if node.parent is not None:
+                if node.parent.value > new_subroot.value:
+                    node.parent.left = new_subroot
+                else:
+                    node.parent.right = new_subroot
+            else:
+                new_subroot.parent = None
+                self._root = new_subroot
+
+        else:
+            self._update_height(node)
+
 
 # ------------------- BASIC TESTING -----------------------------------------
 
@@ -242,10 +309,10 @@ if __name__ == '__main__':
     print("\nPDF - method add() example 2")
     print("----------------------------")
     test_cases = (
-        (10, 20, 30, 40, 50),   # RR, RR
-        (10, 20, 30, 50, 40),   # RR, RL
-        (30, 20, 10, 5, 1),     # LL, LL
-        (30, 20, 10, 1, 5),     # LL, LR
+        (10, 20, 30, 40, 50),  # RR, RR
+        (10, 20, 30, 50, 40),  # RR, RL
+        (30, 20, 10, 5, 1),  # LL, LL
+        (30, 20, 10, 1, 5),  # LL, LR
         (5, 4, 6, 3, 7, 2, 8),  # LL, RR
         (range(0, 30, 3)),
         (range(0, 31, 3)),
