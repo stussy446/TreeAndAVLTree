@@ -108,6 +108,7 @@ class AVL(BST):
         """
         if self.is_empty():
             self._root = AVLNode(value)
+            return
 
         node = self.get_root()
         self.add_recursive_helper(node, value)
@@ -122,8 +123,8 @@ class AVL(BST):
         # perform normal bst insert process
         if root is None:
             return AVLNode(value)
-        elif root.value == value:
-            return root
+        if root.value == value:
+            return
         else:
             if root.value < value:
                 root.right = self.add_recursive_helper(root.right, value)
@@ -134,7 +135,6 @@ class AVL(BST):
                 root.left.parent = root
                 parent = root.left.parent
 
-        self._update_height(root)
 
         self._rebalance(parent)
 
@@ -200,10 +200,10 @@ class AVL(BST):
         if node.right is not None:
             node.right.parent = node
 
-        if node.parent is not None:
-            child.parent = node.parent
-        else:
-            child.parent = None
+        # if node.parent is not None:
+        #     child.parent = node.parent
+        # else:
+        #     child.parent = None
 
         child.left = node
         node.parent = child
@@ -211,9 +211,9 @@ class AVL(BST):
         self._update_height(node)
         self._update_height(child)
 
-        if child.value == self.get_root():
-            self._root = child
-            child.parent = None
+        # if child.value == self.get_root():
+        #     self._root = child
+        #     child.parent = None
 
         return child
 
@@ -230,10 +230,10 @@ class AVL(BST):
         if node.left is not None:
             node.left.parent = node
 
-        if node.parent is not None:
-            child.parent = node.parent
-        else:
-            child.parent = None
+        # if node.parent is not None:
+        #     child.parent = node.parent
+        # else:
+        #     child.parent = None
 
         child.right = node
         node.parent = child
@@ -241,9 +241,9 @@ class AVL(BST):
         self._update_height(node)
         self._update_height(child)
 
-        if child.value == self.get_root():
-            self._root = child
-            child.parent = None
+        # if child.value == self.get_root():
+        #     self._root = child
+        #     child.parent = None
 
         return child
 
@@ -261,7 +261,7 @@ class AVL(BST):
         :param node: AVLNode to potentially be rebalanced
         :type  node: AVLNode
         """
-        original_parent = node.parent
+        # original_parent = node.parent
 
         # if we enter this we have a L-L imbalance at least
         if self._balance_factor(node) < -1:
@@ -271,15 +271,16 @@ class AVL(BST):
                 node.left.parent = node
 
             # if the node being rebalanced parent is not none, set one of the parents children to the new_subroot (c)
+            ancestor = node.parent
             new_subroot = self._rotate_right(node)
-            if original_parent is not None:
-                if new_subroot.value < original_parent.value:
-                    new_subroot.parent.left = original_parent
-                else:
-                    new_subroot.parent.right = original_parent
-            else:
+            if ancestor is None:
                 new_subroot.parent = None
                 self._root = new_subroot
+            else:
+                if new_subroot.value < ancestor.value:
+                    ancestor.left = new_subroot
+                else:
+                    ancestor.right = new_subroot
 
         # if we enter this we have a R-R imbalance at least
         elif self._balance_factor(node) > 1:
@@ -288,15 +289,16 @@ class AVL(BST):
                 node.right = self._rotate_right(node.right)
                 node.right.parent = node
 
+            ancestor = node.parent
             new_subroot = self._rotate_left(node)
-            if original_parent is not None:
-                if new_subroot.value < original_parent.value:
-                    new_subroot.parent.left = original_parent
-                else:
-                    new_subroot.parent.right = original_parent
-            else:
+            if ancestor is None:
                 new_subroot.parent = None
                 self._root = new_subroot
+            else:
+                if new_subroot.value < ancestor.value:
+                    ancestor.left = new_subroot
+                else:
+                    ancestor.right = new_subroot
 
         else:
             self._update_height(node)
@@ -306,18 +308,6 @@ class AVL(BST):
 
 
 if __name__ == '__main__':
-
-    print("steve test cases")
-    print("----------------------------")
-    test_cases = (
-        (1, 2, 3),  # RR
-        (3, 2, 1),  # LL
-        (1, 3, 2),  # RL
-        (3, 1, 2),  # LR
-    )
-
-    for case in test_cases:
-        tree = AVL(case)
 
     print("\nPDF - method add() example 1")
     print("----------------------------")
