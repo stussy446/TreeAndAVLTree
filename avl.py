@@ -172,7 +172,26 @@ class AVL(BST):
 
         # one subtree
         elif only_right_child or only_left_child:
+            # stores nodes child before removing the node
+            if node.right is not None:
+                child = node.right
+            else:
+                child = node.left
             self._remove_one_subtree(parent, node)
+
+            if node.right is not None:
+                node.right = None
+            else:
+                node.left = None
+
+            node.parent = None
+            child.parent = parent
+
+            while parent is not None:
+                self._rebalance(parent)
+                parent = parent.parent
+
+
 
         # two subtrees
         else:
