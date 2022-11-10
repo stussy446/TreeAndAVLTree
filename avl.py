@@ -135,7 +135,10 @@ class AVL(BST):
 
     def remove(self, value: object) -> bool:
         """
-        TODO: Write your implementation
+        Removes the value from the AVL tree. Returns True if value is removed, otherwise returns False
+        :param value: Value object to be removed from tree
+        :type  value: Object
+        :return: boolean (True if value is found, False otherwise)
         """
         pass
 
