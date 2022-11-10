@@ -166,6 +166,10 @@ class AVL(BST):
         if node.left is None and node.right is None:
             self._remove_no_subtrees(parent, node)
             node.parent = None
+
+            if self.is_empty():
+                return True
+
             while parent is not None:
                 self._rebalance(parent)
                 parent = parent.parent
@@ -187,6 +191,9 @@ class AVL(BST):
             node.parent = None
             child.parent = parent
 
+            if self.is_empty():
+                return True
+
             while parent is not None:
                 self._rebalance(parent)
                 parent = parent.parent
@@ -198,9 +205,12 @@ class AVL(BST):
             node.left = None
             node.parent = None
 
+            if self.is_empty():
+                return True
+
             while remove_parent is not None:
                 self._rebalance(parent)
-                parent = parent.parent
+                remove_parent = parent.parent
 
         return True
 
@@ -225,7 +235,8 @@ class AVL(BST):
 
         if inorder_successor != remove_node.right:
             inorder_parent.left = inorder_successor.right
-            inorder_successor.right.parent = inorder_successor
+            if inorder_successor.right is not None:
+                inorder_successor.right.parent = inorder_successor
             inorder_successor.right = remove_node.right
             remove_node.right.parent = inorder_successor
 
@@ -238,8 +249,8 @@ class AVL(BST):
                 inorder_successor.parent = remove_parent
         else:
             self._root = inorder_successor
+            inorder_successor.parent = None
             self._rebalance(inorder_successor)
-            return
 
         return remove_parent
 
@@ -382,19 +393,6 @@ class AVL(BST):
 
 
 if __name__ == '__main__':
-
-    print("steve test cases")
-    print("----------------------------")
-    test_cases = (
-        (1, 2, 3),  # RR
-        (3, 2, 1),  # LL
-        (1, 3, 2),  # RL
-        (3, 1, 2),  # LR
-    )
-
-    for case in test_cases:
-        tree = AVL(case)
-
     print("\nPDF - method add() example 1")
     print("----------------------------")
     test_cases = (
@@ -437,6 +435,14 @@ if __name__ == '__main__':
         if not tree.is_valid_avl():
             raise Exception("PROBLEM WITH ADD OPERATION")
     print('add() stress test finished')
+
+    print("\n steve test cases")
+    print("-------------------------------")
+
+    test = (0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33)
+    tree = AVL(test)
+    tree.remove(21)
+    print('RESULT :', tree)
 
     print("\nPDF - method remove() example 1")
     print("-------------------------------")
