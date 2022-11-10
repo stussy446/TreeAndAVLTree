@@ -104,7 +104,7 @@ class AVL(BST):
         :param value: value to be added to tree
         :type  value: object
         """
-        # if tree is empty, set value as root
+        # if its an empty tree, add node as root and end operation
         if self.is_empty():
             self._root = AVLNode(value)
             return
@@ -112,27 +112,23 @@ class AVL(BST):
         node = self.get_root()
         parent = None
 
-        # traverses to where insert will happen, if a nodes value is equal just return since no duplicates allowed
+        # traverses down tree, if value equals a node on the tree just return since we cant have duplicates
         while node is not None:
             parent = node
-            if value < node.value:
-                node = node.left
-            elif value > node.value:
+            if value > node.value:
                 node = node.right
+            elif value < node.value:
+                node = node.left
             else:
                 return
 
-        # adds the new node to the tree
         if value > parent.value:
             parent.right = AVLNode(value)
-            new_node = parent.right
-            new_node.parent = parent
+            parent.right.parent = parent
         else:
             parent.left = AVLNode(value)
-            new_node = parent.left
-            new_node.parent = parent
-
-        # goes back up the tree to rebalance as needed
+            parent.left.parent = parent
+        # rebalancing part
         while parent is not None:
             self._rebalance(parent)
             parent = parent.parent
@@ -250,45 +246,52 @@ class AVL(BST):
         :param node: current node
         :type  node: AVLNode
         """
-        original_parent = node.parent
+        # grandparent holds the nodes parent before any rotations take place, since the rotations change nodes parents
+        grandparent = node.parent
+        node_balance_factor = self._balance_factor(node)
 
+        # handles LL and LR re-balancing
         if self._balance_factor(node) < -1:
             if self._balance_factor(node.left) > 0:
                 node.left = self._rotate_left(node.left)
                 node.left.parent = node
 
-            # if the passed in node has a parent, set the sub root as one of its children, otherwise set subroot parent
-            # to none
-            new_sub_root = self._rotate_right(node)
-            if original_parent is not None:
-                if new_sub_root.value < original_parent.value:
-                    new_sub_root.parent.left = original_parent
-                else:
-                    new_sub_root.parent.right = original_parent
-            else:
-                new_sub_root.parent = None
-                self._root = new_sub_root
+            # right rotation on original node occurs here
+            new_root = self._rotate_right(node)
+            new_root.parent = grandparent
 
+            # conditional to set the root of the tree and end rebalancing if the new subroot has no parent
+            if new_root.parent is None:
+                self._root = new_root
+                return
+
+            # if the new roots parent is smaller than the new root, set it to the right child, otherwise set to left
+            if new_root.parent.value < new_root.value:
+                new_root.parent.right = new_root
+            else:
+                new_root.parent.left = new_root
+
+        # handles RR and RL re-balancing
         elif self._balance_factor(node) > 1:
             if self._balance_factor(node.right) < 0:
                 node.right = self._rotate_right(node.right)
                 node.right.parent = node
 
-            new_sub_root = self._rotate_left(node)
-            if original_parent is not None:
-                if new_sub_root.value < original_parent.value:
-                    new_sub_root.parent.left = original_parent.value
-                else:
-                    new_sub_root.parent.right = original_parent
+            # left rotation occurs here
+            new_root = self._rotate_left(node)
+            new_root.parent = grandparent
+
+            if new_root.parent is None:
+                self._root = new_root
+                return
+
+            if new_root.parent.value < new_root.value:
+                new_root.parent.right = new_root
             else:
-                new_sub_root.parent = None
-                self._root = new_sub_root
+                new_root.parent.left = new_root
 
         else:
             self._update_height(node)
-
-
-
 
 # ------------------- BASIC TESTING -----------------------------------------
 
