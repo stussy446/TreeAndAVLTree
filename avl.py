@@ -140,27 +140,51 @@ class AVL(BST):
         :type  value: Object
         :return: boolean (True if value is found, False otherwise)
         """
-        pass
+        if self.is_empty():
+            return False
 
-    # Experiment and see if you can use the optional                         #
-    # subtree removal methods defined in the BST here in the AVL.            #
-    # Call normally using self -> self._remove_no_subtrees(parent, node)     #
-    # You need to override the _remove_two_subtrees() method in any case.    #
-    # Remove these comments.                                                 #
-    # Remove these method stubs if you decide not to use them.               #
-    # Change this method in any way you'd like.                              #
+        parent = None
+        node = self.get_root()
+
+        # traverses the tree looking for value to remove
+        while node.value != value and node is not None:
+            parent = node
+            if value > node.value:
+                node = node.right
+            else:
+                node = node.left
+
+            # if value was not found after traversal, return False
+            if node is None:
+                return False
+
+        # handles the removal based on whether the node to be removed has no children, one child, or two children
+        only_left_child = node.right is None and node.left is not None
+        only_right_child = node.left is None and node.right is not None
+
+        # no subtrees
+        if node.left is None and node.right is None:
+            self._remove_no_subtrees(parent, node)
+            node.parent = None
+            while parent is not None:
+                self._rebalance(parent)
+                parent = parent.parent
+
+        # one subtree
+        elif only_right_child or only_left_child:
+            self._remove_one_subtree(parent, node)
+
+        # two subtrees
+        else:
+            self._remove_two_subtrees(parent, node)
+
+        return True
 
     def _remove_two_subtrees(self, remove_parent: AVLNode, remove_node: AVLNode) -> AVLNode:
         """
         TODO: Write your implementation
         """
         pass
-
-    # It's highly recommended to implement                          #
-    # the following methods for balancing the AVL Tree.             #
-    # Remove these comments.                                        #
-    # Remove these method stubs if you decide not to use them.      #
-    # Change these methods in any way you'd like.                   #
 
     def _balance_factor(self, node: AVLNode) -> int:
         """
