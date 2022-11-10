@@ -204,36 +204,13 @@ class AVL(BST):
             # inserts new parent into node
             node.right.parent = node
 
-        if node.parent is not None:
-            child.parent = node.parent
-        else:
-            child.parent = None
-
         child.left = node
         node.parent = child
 
         self._update_height(node)
         self._update_height(child)
 
-        if child.value == self.get_root():
-            self._root = child
-            child.parent = None
-
         return child
-
-        # child = node.right
-        # node.right = child.left
-        #
-        # if node.right is not None:
-        #     node.right.parent = node
-        #
-        # child.left = node
-        # node.parent = child
-        #
-        # self._update_height(node)
-        # self._update_height(child)
-        #
-        # return child
 
     def _rotate_right(self, node: AVLNode) -> AVLNode:
         """
@@ -248,35 +225,13 @@ class AVL(BST):
             # inserts new parent into node
             node.left.parent = node
 
-        if node.parent is not None:
-            child.parent = node.parent
-        else:
-            child.parent = None
-
         child.right = node
         node.parent = child
-
-        if child.value == self.get_root():
-            self._root = child
-            child.parent = None
 
         self._update_height(node)
         self._update_height(child)
 
         return child
-        # child = node.left
-        # node.left = child.right
-        #
-        # if node.left is not None:
-        #     node.left.parent = node
-        #
-        # child.right = node
-        # node.parent = child
-        #
-        # self._update_height(node)
-        # self._update_height(child)
-        #
-        # return child
 
     def _update_height(self, node: AVLNode) -> None:
         """
