@@ -5,7 +5,6 @@
 # Due Date: 11/15/2022
 # Description: Implements AVL Tree
 
-
 import random
 from queue_and_stack import Queue, Stack
 from bst import BSTNode, BST
@@ -16,7 +15,6 @@ class AVLNode(BSTNode):
     AVL Tree Node class. Inherits from BSTNode
     DO NOT CHANGE THIS CLASS IN ANY WAY
     """
-
     def __init__(self, value: object) -> None:
         """
         Initialize a new AVL node
@@ -102,39 +100,35 @@ class AVL(BST):
 
     def add(self, value: object) -> None:
         """
-        Adds a new AVLNode containing the value into the AVL tree and rebalances as necessary
-        :param value: value to be inserted into AVL tree
-        :type  value: Object
+        Adds new AVLNode with value to the AVL tree and rebalances the tree as necessary
+        :param value: value to be added to tree
+        :type  value: object
         """
-        # if AVL tree is empty, sets new node to root
+        # if its an empty tree, add node as root and end operation
         if self.is_empty():
             self._root = AVLNode(value)
             return
 
-        parent = None
         node = self.get_root()
+        parent = None
 
-        # traverse own the tree until getting to what will be the parent of new node
+        # traverses down tree, if value equals a node on the tree just return since we cant have duplicates
         while node is not None:
             parent = node
-            if value < node.value:
-                node = node.left
-            elif value > node.value:
+            if value > node.value:
                 node = node.right
+            elif value < node.value:
+                node = node.left
             else:
-                # no duplicates allowed so just return if duplicate
                 return
 
-        # if new node value is greater than parent value, set to right child, otherwise set to left child
-        new_node = AVLNode(value)
         if value > parent.value:
-            parent.right = new_node
-            new_node.parent = parent
+            parent.right = AVLNode(value)
+            parent.right.parent = parent
         else:
-            parent.left = new_node
-            new_node.parent = parent
-
-        # traverse back up the tree, rebalancing as needed
+            parent.left = AVLNode(value)
+            parent.left.parent = parent
+        # rebalancing part
         while parent is not None:
             self._rebalance(parent)
             parent = parent.parent
@@ -172,7 +166,13 @@ class AVL(BST):
         :param node: AVLNode which balance factor will be calculated
         :return: int
         """
-        return self._get_height(node.right) - self._get_height(node.left)
+        if node is None:
+            return 0
+
+        balance_factor = self._get_height(node.right) - self._get_height(node.left)
+
+        return balance_factor
+
 
     def _get_height(self, node: AVLNode) -> int:
         """
@@ -186,6 +186,7 @@ class AVL(BST):
 
         return node.height
 
+
     def _rotate_left(self, node: AVLNode) -> AVLNode:
         """
         Rotates AVL tree left centered around node
@@ -195,24 +196,15 @@ class AVL(BST):
         """
         child = node.right
         node.right = child.left
-
         if node.right is not None:
+            # inserts new parent into node
             node.right.parent = node
-
-        if node.parent is not None:
-            child.parent = node.parent
-        else:
-            child.parent = None
 
         child.left = node
         node.parent = child
 
         self._update_height(node)
         self._update_height(child)
-
-        if child.value == self.get_root():
-            self._root = child
-            child.parent = None
 
         return child
 
@@ -225,24 +217,15 @@ class AVL(BST):
         """
         child = node.left
         node.left = child.right
-
         if node.left is not None:
+            # inserts new parent into node
             node.left.parent = node
-
-        if node.parent is not None:
-            child.parent = node.parent
-        else:
-            child.parent = None
 
         child.right = node
         node.parent = child
 
         self._update_height(node)
         self._update_height(child)
-
-        if child.value == self.get_root():
-            self._root = child
-            child.parent = None
 
         return child
 
@@ -252,54 +235,63 @@ class AVL(BST):
 
         :param node: AVLNode which height will be updated
         """
+        if node is None:
+            return
+
         node.height = max(self._get_height(node.left), self._get_height(node.right)) + 1
 
     def _rebalance(self, node: AVLNode) -> None:
         """
-        Takes in an AVLNode and rebalances tree as necessary
-        :param node: AVLNode to potentially be rebalanced
+        Receives an AVLNode and rebalances AVL tree as needed based on balance factor
+        :param node: current node
         :type  node: AVLNode
         """
-        original_parent = node.parent
+        # grandparent holds the nodes parent before any rotations take place, since the rotations change nodes parents
+        grandparent = node.parent
+        node_balance_factor = self._balance_factor(node)
 
-        # if we enter this we have a L-L imbalance at least
+        # handles LL and LR re-balancing
         if self._balance_factor(node) < -1:
-            # checks if double rotation is needed and performs first rotation if it is
             if self._balance_factor(node.left) > 0:
                 node.left = self._rotate_left(node.left)
                 node.left.parent = node
 
-            # if the node being rebalanced parent is not none, set one of the parents children to the new_subroot (c)
-            new_subroot = self._rotate_right(node)
-            if original_parent is not None:
-                if new_subroot.value < original_parent.value:
-                    new_subroot.parent.left = original_parent
-                else:
-                    new_subroot.parent.right = original_parent
-            else:
-                new_subroot.parent = None
-                self._root = new_subroot
+            # right rotation on original node occurs here
+            new_root = self._rotate_right(node)
+            new_root.parent = grandparent
 
-        # if we enter this we have a R-R imbalance at least
+            # conditional to set the root of the tree and end rebalancing if the new subroot has no parent
+            if new_root.parent is None:
+                self._root = new_root
+                return
+
+            # if the new roots parent is smaller than the new root, set it to the right child, otherwise set to left
+            if new_root.parent.value < new_root.value:
+                new_root.parent.right = new_root
+            else:
+                new_root.parent.left = new_root
+
+        # handles RR and RL re-balancing
         elif self._balance_factor(node) > 1:
-            # checks if double rotation is needed and performs first rotation if it is
             if self._balance_factor(node.right) < 0:
                 node.right = self._rotate_right(node.right)
                 node.right.parent = node
 
-            new_subroot = self._rotate_left(node)
-            if original_parent is not None:
-                if new_subroot.value < original_parent.value:
-                    new_subroot.parent.left = original_parent
-                else:
-                    new_subroot.parent.right = original_parent
+            # left rotation occurs here
+            new_root = self._rotate_left(node)
+            new_root.parent = grandparent
+
+            if new_root.parent is None:
+                self._root = new_root
+                return
+
+            if new_root.parent.value < new_root.value:
+                new_root.parent.right = new_root
             else:
-                new_subroot.parent = None
-                self._root = new_subroot
+                new_root.parent.left = new_root
 
         else:
             self._update_height(node)
-
 
 # ------------------- BASIC TESTING -----------------------------------------
 
@@ -333,10 +325,10 @@ if __name__ == '__main__':
     print("\nPDF - method add() example 2")
     print("----------------------------")
     test_cases = (
-        (10, 20, 30, 40, 50),  # RR, RR
-        (10, 20, 30, 50, 40),  # RR, RL
-        (30, 20, 10, 5, 1),  # LL, LL
-        (30, 20, 10, 1, 5),  # LL, LR
+        (10, 20, 30, 40, 50),   # RR, RR
+        (10, 20, 30, 50, 40),   # RR, RL
+        (30, 20, 10, 5, 1),     # LL, LL
+        (30, 20, 10, 1, 5),     # LL, LR
         (5, 4, 6, 3, 7, 2, 8),  # LL, RR
         (range(0, 30, 3)),
         (range(0, 31, 3)),
