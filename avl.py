@@ -191,19 +191,58 @@ class AVL(BST):
                 self._rebalance(parent)
                 parent = parent.parent
 
-
-
         # two subtrees
         else:
-            self._remove_two_subtrees(parent, node)
+            remove_parent = self._remove_two_subtrees(parent, node)
+            node.right = None
+            node.left = None
+            node.parent = None
+
+            while remove_parent is not None:
+                self._rebalance(parent)
+                parent = parent.parent
 
         return True
 
     def _remove_two_subtrees(self, remove_parent: AVLNode, remove_node: AVLNode) -> AVLNode:
         """
-        TODO: Write your implementation
+        Handles removal of a node that has two subtrees
+        :param remove_parent: Parent of the node to be removed
+        :type  remove_parent AVLNode
+        :param remove_node: Node to be removed
+        :type  remove_node: AVLNode
+        :return: AVLNode
         """
-        pass
+        inorder_successor = remove_node.right
+        inorder_parent = remove_node
+
+        while inorder_successor.left is not None:
+            inorder_parent = inorder_successor
+            inorder_successor = inorder_successor.left
+
+        inorder_successor.left = remove_node.left
+        inorder_successor.left.parent = inorder_successor
+
+        if inorder_successor != remove_node.right:
+            inorder_parent.left = inorder_successor.right
+            inorder_successor.right.parent = inorder_successor
+            inorder_successor.right = remove_node.right
+            remove_node.right.parent = inorder_successor
+
+        if remove_parent is not None:
+            if inorder_successor.value >= remove_parent.value:
+                remove_parent.right = inorder_successor
+                inorder_successor.parent = remove_parent
+            else:
+                remove_parent.left = inorder_successor
+                inorder_successor.parent = remove_parent
+        else:
+            self._root = inorder_successor
+            self._rebalance(inorder_successor)
+            return
+
+        return remove_parent
+
 
     def _balance_factor(self, node: AVLNode) -> int:
         """
