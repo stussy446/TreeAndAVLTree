@@ -201,16 +201,13 @@ class AVL(BST):
         # two subtrees
         else:
             remove_parent = self._remove_two_subtrees(parent, node)
-            node.right = None
-            node.left = None
-            node.parent = None
 
             if self.is_empty():
                 return True
 
             while remove_parent is not None:
-                self._rebalance(parent)
-                remove_parent = parent.parent
+                self._rebalance(remove_parent)
+                remove_parent = remove_parent.parent
 
         return True
 
@@ -235,6 +232,10 @@ class AVL(BST):
 
         if inorder_successor != remove_node.right:
             inorder_parent.left = inorder_successor.right
+            inorder_successor.right = None
+            if inorder_parent.left is not None:
+                inorder_parent.left.parent = inorder_parent
+
             if inorder_successor.right is not None:
                 inorder_successor.right.parent = inorder_successor
             inorder_successor.right = remove_node.right
@@ -250,9 +251,10 @@ class AVL(BST):
         else:
             self._root = inorder_successor
             inorder_successor.parent = None
-            self._rebalance(inorder_successor)
 
-        return remove_parent
+            self._rebalance(inorder_parent)
+
+        return inorder_successor
 
 
     def _balance_factor(self, node: AVLNode) -> int:
@@ -343,7 +345,11 @@ class AVL(BST):
         :type  node: AVLNode
         """
         # grandparent holds the nodes parent before any rotations take place, since the rotations change nodes parents
-        grandparent = node.parent
+        if node.parent is not None:
+            grandparent = node.parent
+        else:
+            grandparent = None
+
         node_balance_factor = self._balance_factor(node)
 
         # handles LL and LR re-balancing
@@ -439,9 +445,11 @@ if __name__ == '__main__':
     print("\n steve test cases")
     print("-------------------------------")
 
-    test = (0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33)
+    test = (-71, -23, 76, -12, 25, -37, -100, 95, -65)
     tree = AVL(test)
-    tree.remove(21)
+    print('INPUT :', tree)
+    tree.remove(-71)
+
     print('RESULT :', tree)
 
     print("\nPDF - method remove() example 1")
