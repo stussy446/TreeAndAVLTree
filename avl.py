@@ -259,25 +259,23 @@ class AVL(BST):
             if inorder_successor.value >= remove_parent.value:
                 remove_parent.right = inorder_successor
                 inorder_successor.parent = remove_parent
+                # self._rebalance(inorder_successor)
 
                 inorder_successor_balance_factor = self._balance_factor(inorder_successor)
                 inorder_parent_balance_facotr = self._balance_factor(inorder_parent)
                 root_balance_factor = self._balance_factor(self.get_root())
                 root_left_balance_factor = self._balance_factor(self.get_root().left)
-
-
             else:
                 remove_parent.left = inorder_successor
                 inorder_successor.parent = remove_parent
+            self._rebalance(inorder_successor)
 
-                root_balance_factor = self._balance_factor(self.get_root())
-                root_left_balance_factor = self._balance_factor(self.get_root().left)
+            root_balance_factor = self._balance_factor(self.get_root())
+            root_left_balance_factor = self._balance_factor(self.get_root().left)
 
         else:
             self._root = inorder_successor
             inorder_successor.parent = None
-
-            # self._rebalance(inorder_parent)
 
         while inorder_parent is not None:
             self._rebalance(inorder_parent)
@@ -482,12 +480,11 @@ if __name__ == '__main__':
     print("\n steve test cases")
     print("-------------------------------")
 
-    test = (96, -95, 73, 41, 44, -50, 84, -12, 87, -100)
+    test = (97, -94, -93, -38, 70, 6, -72, 56, 92, -2)
     tree = AVL(test)
     print('INPUT :', tree)
-    tree.remove(96)
-    tree.remove(73)
-
+    tree.remove(97)
+    tree.remove(-93)
 
     print('RESULT :', tree)
 
