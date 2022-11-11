@@ -220,6 +220,9 @@ class AVL(BST):
         :type  remove_node: AVLNode
         :return: AVLNode
         """
+        root_balance_factor = self._balance_factor(self.get_root())
+        root_left_balance_factor = self._balance_factor(self.get_root().left)
+
         inorder_successor = remove_node.right
         inorder_parent = remove_node
 
@@ -227,11 +230,19 @@ class AVL(BST):
             inorder_parent = inorder_successor
             inorder_successor = inorder_successor.left
 
+
         inorder_successor.left = remove_node.left
         inorder_successor.left.parent = inorder_successor
 
+        root_balance_factor = self._balance_factor(self.get_root())
+        root_left_balance_factor = self._balance_factor(self.get_root().left)
+        root_right_balance_factor = self._balance_factor(self.get_root().right)
+
+
+
         if inorder_successor != remove_node.right:
             inorder_parent.left = inorder_successor.right
+            # try rabalancing parent here?
             inorder_successor.right = None
             if inorder_parent.left is not None:
                 inorder_parent.left.parent = inorder_parent
@@ -241,18 +252,44 @@ class AVL(BST):
             inorder_successor.right = remove_node.right
             remove_node.right.parent = inorder_successor
 
+            root_balance_factor = self._balance_factor(self.get_root())
+            root_left_balance_factor = self._balance_factor(self.get_root().left)
+
         if remove_parent is not None:
             if inorder_successor.value >= remove_parent.value:
                 remove_parent.right = inorder_successor
                 inorder_successor.parent = remove_parent
+
+                inorder_successor_balance_factor = self._balance_factor(inorder_successor)
+                inorder_parent_balance_facotr = self._balance_factor(inorder_parent)
+                root_balance_factor = self._balance_factor(self.get_root())
+                root_left_balance_factor = self._balance_factor(self.get_root().left)
+
+
             else:
                 remove_parent.left = inorder_successor
                 inorder_successor.parent = remove_parent
+
+                root_balance_factor = self._balance_factor(self.get_root())
+                root_left_balance_factor = self._balance_factor(self.get_root().left)
+
         else:
             self._root = inorder_successor
             inorder_successor.parent = None
 
+            # self._rebalance(inorder_parent)
+
+        while inorder_parent is not None:
             self._rebalance(inorder_parent)
+            inorder_parent = inorder_parent.parent
+
+        remove_node.left = None
+        remove_node.right = None
+        remove_node.parent = None
+
+
+        root_balance_factor = self._balance_factor(self.get_root())
+        root_left_child_balance_factor = self._balance_factor(self.get_root().left)
 
         return inorder_successor
 
@@ -445,10 +482,12 @@ if __name__ == '__main__':
     print("\n steve test cases")
     print("-------------------------------")
 
-    test = (-71, -23, 76, -12, 25, -37, -100, 95, -65)
+    test = (96, -95, 73, 41, 44, -50, 84, -12, 87, -100)
     tree = AVL(test)
     print('INPUT :', tree)
-    tree.remove(-71)
+    tree.remove(96)
+    tree.remove(73)
+
 
     print('RESULT :', tree)
 
