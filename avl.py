@@ -220,29 +220,20 @@ class AVL(BST):
         :type  remove_node: AVLNode
         :return: AVLNode
         """
-        root_balance_factor = self._balance_factor(self.get_root())
-        root_left_balance_factor = self._balance_factor(self.get_root().left)
-
         inorder_successor = remove_node.right
         inorder_parent = remove_node
 
+        # sets the inorder successor of the node to be removed as well as the inorder successor's parent
         while inorder_successor.left is not None:
             inorder_parent = inorder_successor
             inorder_successor = inorder_successor.left
 
-
         inorder_successor.left = remove_node.left
         inorder_successor.left.parent = inorder_successor
 
-        root_balance_factor = self._balance_factor(self.get_root())
-        root_left_balance_factor = self._balance_factor(self.get_root().left)
-        root_right_balance_factor = self._balance_factor(self.get_root().right)
-
-
-
+        # handle case if the inorder successor of the node to be removed is not the nodes right node
         if inorder_successor != remove_node.right:
             inorder_parent.left = inorder_successor.right
-            # try rabalancing parent here?
             inorder_successor.right = None
             if inorder_parent.left is not None:
                 inorder_parent.left.parent = inorder_parent
@@ -252,42 +243,24 @@ class AVL(BST):
             inorder_successor.right = remove_node.right
             remove_node.right.parent = inorder_successor
 
-            root_balance_factor = self._balance_factor(self.get_root())
-            root_left_balance_factor = self._balance_factor(self.get_root().left)
-
+        # handle case where the node to be removed parent is none
         if remove_parent is not None:
             if inorder_successor.value >= remove_parent.value:
                 remove_parent.right = inorder_successor
                 inorder_successor.parent = remove_parent
-                # self._rebalance(inorder_successor)
-
-                inorder_successor_balance_factor = self._balance_factor(inorder_successor)
-                inorder_parent_balance_facotr = self._balance_factor(inorder_parent)
-                root_balance_factor = self._balance_factor(self.get_root())
-                root_left_balance_factor = self._balance_factor(self.get_root().left)
             else:
                 remove_parent.left = inorder_successor
                 inorder_successor.parent = remove_parent
+
             self._rebalance(inorder_successor)
-
-            root_balance_factor = self._balance_factor(self.get_root())
-            root_left_balance_factor = self._balance_factor(self.get_root().left)
-
         else:
             self._root = inorder_successor
             inorder_successor.parent = None
 
+        # rebalances before passing the inorder successor back to remove for final processing 
         while inorder_parent is not None:
             self._rebalance(inorder_parent)
             inorder_parent = inorder_parent.parent
-
-        remove_node.left = None
-        remove_node.right = None
-        remove_node.parent = None
-
-
-        root_balance_factor = self._balance_factor(self.get_root())
-        root_left_child_balance_factor = self._balance_factor(self.get_root().left)
 
         return inorder_successor
 
